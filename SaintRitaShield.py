@@ -4,6 +4,7 @@ import os
 import fnmatch
 from random import randint
 
+
 class ShieldUp:
     rita01 = """// SaintRita Code Shield
 // O powerful St. Rita, rightly called Saint of the Impossible,
@@ -45,38 +46,37 @@ class ShieldUp:
 """
     prayers = []
 
-    def __init__(self, dirPath):
-        print "Kyrie eleison!"
+    def __init__(self, dir_path):
+        print("Kyrie eleison!")
         self.prayers = [self.rita01, self.rita02, self.rita03, self.rita04]
-        fileList = self.__getCsFiles(dirPath)
-        if len(fileList) > 0:
-            for f in fileList:
-                self.__strengthenFile(f)
+        file_list = self.cs_files(dir_path)
+        if len(file_list) > 0:
+            for f in file_list:
+                self.strengthen_file(f)
         else:
-            print "Nothing left to pray for."
+            print("Nothing left to pray for.")
 
-    def __selectRandomPrayers(self):
+    def select_random_prayers(self):
         return self.prayers[randint(0, len(self.prayers) - 1)]
 
-    def __getCsFiles(self, dir):
+    def cs_files(self, directory):
         matches = []
-        for root, dirnames, filenames in os.walk(dir):
-            for filename in fnmatch.filter(filenames, '*.cs'):
+        for root, dir_names, file_names in os.walk(directory):
+            for filename in fnmatch.filter(file_names, '*.cs'):
                 matches.append(os.path.join(root, filename))
         return matches
 
-    def __strengthenFile(self, filepath):
-        oldfile = []
-        file = open(filepath, "r")
-        oldfile = file.readlines()
+    def strengthen_file(self, file_path):
+        file = open(file_path, "r")
+        old_file = file.readlines()
         file.close()
 
-        if len(oldfile) > 0:
-            if str(oldfile[0]) != "// SaintRita Code Shield\n":
-                newfile = open(filepath, "w")
-                newfile.write(self.__selectRandomPrayers() + "\n")
-                newfile.writelines(oldfile)
-                newfile.close()
-                print "+ %s Amen!" % (file.name)
+        if len(old_file) > 0:
+            if str(old_file[0]) != "// SaintRita Code Shield\n":
+                new_file = open(file_path, "w")
+                new_file.write(self.select_random_prayers() + "\n")
+                new_file.writelines(old_file)
+                new_file.close()
+                print("+ %s Amen!" % file.name)
             else:
-                print "- %s Is already shielded!" % (file.name)
+                print("- %s Is already shielded!" % file.name)
