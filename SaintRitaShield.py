@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 import os
 import fnmatch
 from random import randint
@@ -46,37 +44,37 @@ class ShieldUp:
 """
     prayers = []
 
-    def __init__(self, dir_path):
+    def __init__(self, dir_path, extension):
         print("Kyrie eleison!")
         self.prayers = [self.rita01, self.rita02, self.rita03, self.rita04]
-        file_list = self.cs_files(dir_path)
+        file_list = self.__get_cs_files(dir_path, extension)
         if len(file_list) > 0:
+            i = 0
             for f in file_list:
-                self.strengthen_file(f)
+                self.__strengthen_file(f)
+                i += 1
+            print("\nChecked %s files" % i)
         else:
             print("Nothing left to pray for.")
 
-    def select_random_prayers(self):
+    def __select_random_prayers(self):
         return self.prayers[randint(0, len(self.prayers) - 1)]
 
-    def cs_files(self, directory):
+    @staticmethod
+    def __get_cs_files(directory, extension):
         matches = []
         for root, dir_names, file_names in os.walk(directory):
-            for filename in fnmatch.filter(file_names, '*.cs'):
+            for filename in fnmatch.filter(file_names, '*.'+extension):
                 matches.append(os.path.join(root, filename))
         return matches
 
-    def strengthen_file(self, file_path):
-        file = open(file_path, "r")
-        old_file = file.readlines()
-        file.close()
-
-        if len(old_file) > 0:
-            if str(old_file[0]) != "// SaintRita Code Shield\n":
-                new_file = open(file_path, "w")
-                new_file.write(self.select_random_prayers() + "\n")
-                new_file.writelines(old_file)
-                new_file.close()
-                print("+ %s Amen!" % file.name)
+    def __strengthen_file(self, file_path):
+        with open(file_path, 'r', encoding="utf8") as original:
+            data = original.read()
+        if len(data) > 0:
+            if data[0:24].encode("utf8") != "// SaintRita Code Shield".encode("utf8"):
+                with open(file_path, 'w', encoding="utf8") as modified:
+                    modified.write(self.__select_random_prayers() + "\n" + data)
+                print("+ %s Amen!" % file_path)
             else:
-                print("- %s Is already shielded!" % file.name)
+                print("- %s Is already shielded!" % file_path)
